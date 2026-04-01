@@ -259,7 +259,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="price-row total-row"><span class="price-label">Total</span><span class="price-amount"><?= fmtMoney($total) ?></span></div>
     <div class="book-row">
         <a class="back-btn" href="listing.php?id=<?= urlencode($id) ?>">&lsaquo;</a>
-        <a class="book-btn" href="book.php?id=<?= urlencode($id) ?>&quoteId=<?= urlencode($quoteId) ?>">Book now</a>
+        <a class="book-btn" href="book.php?id=<?= urlencode($id) ?>&quoteId=<?= urlencode($quoteId) ?>&checkIn=<?= urlencode($checkIn) ?>&checkOut=<?= urlencode($checkOut) ?>&guests=<?= urlencode($guests) ?>&nights=<?= $nights ?>&total=<?= $total ?>">Book now</a>
     </div>
 
 <?php elseif ($hasParams && $quoteError): ?>
