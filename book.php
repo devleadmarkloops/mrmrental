@@ -2,13 +2,14 @@
 // book.php — Booking Page
 require_once 'config.php';
 
-$id       = $_GET['id']       ?? '';
-$quoteId  = $_GET['quoteId']  ?? '';
-$checkIn  = $_GET['checkIn']  ?? '';
-$checkOut = $_GET['checkOut'] ?? '';
-$guests   = $_GET['guests']   ?? '';
-$nights   = (int)($_GET['nights'] ?? 0);
-$total    = (float)($_GET['total'] ?? 0);
+$id         = $_GET['id']         ?? '';
+$quoteId    = $_GET['quoteId']    ?? '';
+$ratePlanId = $_GET['ratePlanId'] ?? '';
+$checkIn    = $_GET['checkIn']    ?? '';
+$checkOut   = $_GET['checkOut']   ?? '';
+$guests     = $_GET['guests']     ?? '';
+$nights     = (int)($_GET['nights'] ?? 0);
+$total      = (float)($_GET['total'] ?? 0);
 
 if (!$id || !$quoteId || !$checkIn || !$checkOut) {
     header('Location: index.php');
@@ -51,12 +52,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($validationErrors)) {
         try {
-            $reservation = guestyPost('/api/reservations', [
-                'quoteId'        => $quoteId,
-                'guestFirstName' => $firstName,
-                'guestLastName'  => $lastName,
-                'guestEmail'     => $email,
-                'guestPhone'     => $phone,
+            $reservation = guestyPost('/api/reservations/quotes/' . urlencode($quoteId) . '/inquiry', [
+                'ratePlanId' => $ratePlanId,
+                'guest'      => [
+                    'firstName' => $firstName,
+                    'lastName'  => $lastName,
+                    'email'     => $email,
+                    'phone'     => $phone,
+                ],
+                'policy'     => [
+                    'termsAndConditions' => [
+                        'isAccepted'      => true,
+                        'dateOfAcceptance' => gmdate('Y-m-d\TH:i:s.v\Z'),
+                    ],
+                ],
             ]);
 
             if (!$reservation) {

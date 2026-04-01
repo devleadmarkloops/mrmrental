@@ -57,14 +57,16 @@ $feesList = $taxesList = [];
 $cancelPolicy = '';
 
 if ($quote) {
-    $quoteId  = $quote['_id'] ?? '';
-    $ratePlan = $quote['rates']['ratePlans'][0] ?? [];
-    $money    = $ratePlan['money'] ?? [];
+    $quoteId      = $quote['_id'] ?? '';
+    $ratePlanData = $quote['rates']['ratePlans'][0] ?? [];
+    $ratePlan     = $ratePlanData['ratePlan'] ?? [];
+    $ratePlanId   = $ratePlan['_id'] ?? '';
+    $money        = $ratePlan['money'] ?? [];
 
     $subtotal   = $money['fareAccommodation'] ?? 0;
     $feesTotal  = $money['totalFees'] ?? 0;
     $taxesTotal = $money['totalTaxes'] ?? 0;
-    $total      = $money['hostPayout'] ?? 0;
+    $total      = $money['subTotalPrice'] ?? 0;
 
     $d1 = new DateTime($checkIn);
     $d2 = new DateTime($checkOut);
@@ -72,10 +74,15 @@ if ($quote) {
 
     $cancelPolicy = $ratePlan['cancellationPolicy'] ?? '';
 
+    // Build fees list from invoiceItems; fall back to fareCleaning if no items
     foreach (($money['invoiceItems'] ?? []) as $item) {
         $t = $item['type'] ?? '';
         if (str_contains($t, 'FEE'))      $feesList[]  = $item;
         elseif (str_contains($t, 'TAX'))   $taxesList[] = $item;
+    }
+    if (empty($feesList) && ($money['fareCleaning'] ?? 0) > 0) {
+        $feesList[] = ['title' => 'Cleaning fee', 'amount' => $money['fareCleaning']];
+        $feesTotal  = $feesTotal ?: $money['fareCleaning'];
     }
 }
 
@@ -259,7 +266,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     <div class="price-row total-row"><span class="price-label">Total</span><span class="price-amount"><?= fmtMoney($total) ?></span></div>
     <div class="book-row">
         <a class="back-btn" href="listing.php?id=<?= urlencode($id) ?>">&lsaquo;</a>
-        <a class="book-btn" href="book.php?id=<?= urlencode($id) ?>&quoteId=<?= urlencode($quoteId) ?>&checkIn=<?= urlencode($checkIn) ?>&checkOut=<?= urlencode($checkOut) ?>&guests=<?= urlencode($guests) ?>&nights=<?= $nights ?>&total=<?= $total ?>">Book now</a>
+        <a class="book-btn" href="book.php?id=<?= urlencode($id) ?>&quoteId=<?= urlencode($quoteId) ?>&ratePlanId=<?= urlencode($ratePlanId) ?>&checkIn=<?= urlencode($checkIn) ?>&checkOut=<?= urlencode($checkOut) ?>&guests=<?= urlencode($guests) ?>&nights=<?= $nights ?>&total=<?= $total ?>">Book now</a>
     </div>
 
 <?php elseif ($hasParams && $quoteError): ?>

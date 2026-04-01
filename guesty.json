@@ -1,0 +1,546 @@
+{
+  "info": {
+    "_postman_id": "cc229cc7-3b5f-4043-bf15-b35474d47b74",
+    "name": "Guesty Booking Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53608791"
+  },
+  "item": [
+    {
+      "name": "Get Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.access_token) {",
+              "    pm.collectionVariables.set(\"token\", response.access_token);",
+              "    console.log(\"Token saved successfully!\");",
+              "} else {",
+              "    console.log(\"No token found in response\");",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-cache",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "grant_type",
+              "value": "client_credentials",
+              "type": "text",
+              "uuid": "c9c98166-0f8b-4873-9fc7-e2c5a5bf6738"
+            },
+            {
+              "key": "scope",
+              "value": "booking_engine:api",
+              "type": "text",
+              "uuid": "cf35e244-a6b3-4a9e-892d-1e08d3722ef4"
+            },
+            {
+              "key": "client_id",
+              "value": "{{clientId}}",
+              "type": "text",
+              "uuid": "7fc21577-85e3-4a9e-984f-3c4227d59a18"
+            },
+            {
+              "key": "client_secret",
+              "value": "{{clientSecret}}",
+              "type": "text",
+              "uuid": "0fdf27eb-1ff2-4b0c-9623-b55e52760d26"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/oauth2/token",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "oauth2",
+            "token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Cities (for the destination dropdown)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/listings/cities",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "listings",
+            "cities"
+          ],
+          "query": [
+            {
+              "key": "limit",
+              "value": "10",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "searchText",
+              "value": "Miami",
+              "description": "searches on city field",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Listings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.results && response.results.length > 0) {",
+              "    pm.collectionVariables.set(\"listingId\", response.results[0]._id);",
+              "    console.log(\"First listing ID saved: \" + response.results[0]._id);",
+              "    console.log(\"Total listings found: \" + response.results.length);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/listings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "listings"
+          ],
+          "query": [
+            {
+              "key": "city",
+              "value": "Fort Lauderdale",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "state",
+              "value": "Florida",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "country",
+              "value": "United States of America",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "checkIn",
+              "value": "2026-04-15",
+              "description": "YYYY-MM-DD format",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "checkOut",
+              "value": "2026-04-20",
+              "description": "YYYY-MM-DD format",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "guests",
+              "value": "4",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "numberOfBedrooms",
+              "value": "3",
+              "description": "Returns 3+ bedrooms (minimum, not exact)",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "limit",
+              "value": "1",
+              "description": "number of listings api returns",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "fields",
+              "value": "_id title address pictures prices bedrooms bathrooms accommodates amenities",
+              "description": "if selected api will return only those fields that are mentioned and ignore the ones which are not mentioned in the fields value",
+              "type": "text",
+              "disabled": true
+            },
+            {
+              "key": "cursor",
+              "value": "eyJuZXh0Q3Vyc29yIjp7Imxpc3RpbmdJZCI6IjY5MTYzZGJhYjhmNDI2MDAxMzJhNDZhNiJ9fQ==",
+              "description": "add the cursro value from the response to get the next pagingated listings ",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "## How Pagination Works\n\nThe API uses **cursor-based pagination** (not page numbers). Notice in your response:\n\n``` json\n\"pagination\": {\n    \"total\": 69,\n    \"cursor\": {\n        \"next\": \"eyJuZXh0Q3Vyc29yIj...\"   ← this is your \"next page\" key\n    }\n}\n\n ```\n\n> You have **69 total listings** available. \n  \n\nTo get the next 20 listings, add the cursor value as a query parameter:\n\n```\nGET /api/listings?cursor=eyJuZXh0Q3Vyc29yIj...\n\n ```\n\nKeep using the `next` cursor from each response until `cursor.next` comes back as `null` — that means you've reached the last page.\n\nTo get **all 69 listings at once**, set `limit=100` (that's the maximum allowed).\n\n---\n\n## Query Parameters Reference\n\n### Pagination\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `limit` | `20` | Max 100, default 20 |\n| `cursor` | _(from previous response)_ | For next page |\n\n---\n\n### Dates & Guests\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `checkIn` | `2025-08-01` | Format: YYYY-MM-DD |\n| `checkOut` | `2025-08-05` | Format: YYYY-MM-DD |\n| `guests` | `4` | Total number of guests |\n\n---\n\n### Location\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `city` | `Fort Lauderdale` | Must include `country` too |\n| `country` | `United States` | Required when using `city` |\n| `state` | `Florida` | Optional |\n| `neighborhood` | `Downtown` | Optional |\n| `minLat` / `maxLat` | `26.1` / `26.3` | Geo bounding box |\n| `minLng` / `maxLng` | `-80.2` / `-80.0` | Geo bounding box |\n\n---\n\n### Property Filters\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `numberOfBedrooms` | `2` | Minimum value (2+) |\n| `numberOfBathrooms` | `1` | Minimum value |\n| `minOccupancy` | `4` | Minimum guest capacity |\n| `propertyType` | `HOUSE` | `APARTMENT`, `VILLA`, `CABIN`, etc. |\n| `listingType` | `SINGLE` | `SINGLE` or `MTL` |\n| `roomType` | `ENTIRE_HOME_APT` | `PRIVATE_ROOM`, `SHARED_ROOM` |\n\n---\n\n### Price Range\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `minPrice` | `100` | Must include `currency` |\n| `maxPrice` | `500` | Must include `currency` |\n| `currency` | `USD` | Required with price filters |\n\n---\n\n### Amenities\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `includeAmenities` | `POOL,WIFI,PETS_ALLOWED` | Comma-separated |\n| `excludeAmenities` | `SMOKING_ALLOWED` | Comma-separated |\n| `petsAllowed` | `true` | Boolean |\n| `smokingAllowed` | `false` | Boolean |\n\n---\n\n### Bed Types\n\n| Parameter | Example | Notes |\n| --- | --- | --- |\n| `kingBed` | `1` | Minimum number required |\n| `queenBed` | `2` | Minimum number required |\n\n---\n\n### Fields (Request Only What You Need)\n\nUse the `fields` parameter to limit the response to specific properties and reduce payload size:\n\n```\nfields=_id title address pictures prices bedrooms bathrooms accommodates amenities reviews\n\n ```"
+      },
+      "response": []
+    },
+    {
+      "name": "Get Single Listing",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/listings/{{listingId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "listings",
+            "{{listingId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Listing Calendar",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/listings/{{listingId}}/calendar?from=2026-04-01&to=2026-04-30",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "listings",
+            "{{listingId}}",
+            "calendar"
+          ],
+          "query": [
+            {
+              "key": "from",
+              "value": "2026-04-01",
+              "type": "text"
+            },
+            {
+              "key": "to",
+              "value": "2026-04-30",
+              "type": "text"
+            }
+          ]
+        },
+        "description": "## Important Thing to Understand About the Calendar\n\nThe `minNights` value on the **check-in date** is what matters. So when your WordPress site shows a calendar to the user, you need to:\n\n1. When a user picks a check-in date, look up `minNights` for that date\n    \n2. Automatically block all checkout dates that are less than `minNights` away\n    \n3. Only allow checkout dates that satisfy the minimum\n    \n\nThis is standard behavior on all vacation rental sites — you'll implement this logic in your calendar UI later.  \n  \nAlso Note the `blocks` Object\n\nYour calendar response has a `blocks` field on each date that tells you _why_ something is unavailable. Here's what each key means:\n\n| Key | Meaning |\n| --- | --- |\n| `b` | **Booked** — has a reservation |\n| `r` | Reserved (inquiry pending) |\n| `m` | Manually blocked by host |\n| `bd` | Blocked due to booking window |\n| `sr` | Sync restriction |\n| `a` | Advance notice block |\n| `o` | Owner block |\n| `pt` | Preparation time (turnover day) |\n| `cta` | Closed to arrival |\n| `ctd` | Closed to departure |\n\nIn your data, only `b: true` is firing, meaning these dates are simply booked by guests."
+      },
+      "response": []
+    },
+    {
+      "name": "Create a Quote (Price Calculation)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response._id) {",
+              "    pm.collectionVariables.set(\"quoteId\", response._id);",
+              "    console.log(\"Quote ID saved: \" + response._id);",
+              "    console.log(\"Expires at: \" + response.expiresAt);",
+              "}",
+              "if (response.rates && response.rates.ratePlans && response.rates.ratePlans.length > 0) {",
+              "    var ratePlanId = response.rates.ratePlans[0].ratePlan._id;",
+              "    pm.collectionVariables.set(\"ratePlanId\", ratePlanId);",
+              "    console.log(\"Rate Plan ID saved: \" + ratePlanId);",
+              "    ",
+              "    // Log the price breakdown",
+              "    var money = response.rates.ratePlans[0].ratePlan.money;",
+              "    console.log(\"Accommodation: \" + money.fareAccommodation);",
+              "    console.log(\"Cleaning fee: \" + money.fareCleaning);",
+              "    console.log(\"Taxes: \" + money.totalTaxes);",
+              "    console.log(\"Total: \" + money.subTotalPrice);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"listingId\": \"{{listingId}}\",\n  \"checkInDateLocalized\": \"2026-04-07\",\n  \"checkOutDateLocalized\": \"2026-04-09\",\n  \"guestsCount\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/quotes",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "quotes"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Retrieve a Quote (Optional)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/quotes/{{quoteId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "quotes",
+            "{{quoteId}}"
+          ]
+        },
+        "description": "If you want to look up a quote again later (e.g. the user comes back after a few minutes):\n\nUseful to check if it has expired before attempting to book."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Inquiry (Book Without Payment)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response._id) {",
+              "    pm.collectionVariables.set(\"reservationId\", response._id);",
+              "    console.log(\"Reservation ID: \" + response._id);",
+              "    console.log(\"Status: \" + response.status);",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ratePlanId\": \"{{ratePlanId}}\",\n  \"guest\": {\n    \"firstName\": \"Test Booking\",\n    \"lastName\": \"Wordpress\",\n    \"email\": \"test@yourwebsite.com\",\n    \"phone\": \"15551234567\"\n  },\n  \"policy\": {\n    \"termsAndConditions\": {\n      \"isAccepted\": true,\n      \"dateOfAcceptance\": \"2026-03-27T07:42:23.909Z\"\n    }\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/quotes/{{quoteId}}/inquiry",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "quotes",
+            "{{quoteId}}",
+            "inquiry"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Reservation Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/reservations/{{reservationId}}/details",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "reservations",
+            "{{reservationId}}",
+            "details"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://booking.guesty.com"
+    },
+    {
+      "key": "clientId",
+      "value": "0oatt4ug3pJw7DJ5w5d7"
+    },
+    {
+      "key": "clientSecret",
+      "value": "7Sj0CKxTQFU742jY8dNmcdgI76M__USkPRY19ZoqUF3n2BHcchG0vNt-Vy3Ll7Je"
+    },
+    {
+      "key": "token",
+      "value": "eyJraWQiOiJBeHBOWmFxcUhJNkM3OXEwTENzTEo5V25vUHJtc3kxV3E3RTNFYWFaT1hvIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlotVmVyY19wTkkxTS12UDdMdDFZcWNnWjRlNGdKU3h1ZnJ5ampLdkd6dXMiLCJpc3MiOiJodHRwczovL2xvZ2luLmd1ZXN0eS5jb20vb2F1dGgyL2F1c2Y2Y2ZjMmxTN3hCTGpKNWQ2IiwiYXVkIjoiaHR0cHM6Ly9ib29raW5nLmd1ZXN0eS5jb20iLCJpYXQiOjE3NzQ1OTM2NTMsImV4cCI6MTc3NDY4MDA1MywiY2lkIjoiMG9hdHQ0dWczcEp3N0RKNXc1ZDciLCJzY3AiOlsiYm9va2luZ19lbmdpbmU6YXBpIl0sInJlcXVlc3RlciI6IkJPT0tJTkciLCJzdWIiOiIwb2F0dDR1ZzNwSnc3REo1dzVkNyIsImFjY291bnRJZCI6IjY5MDRlNTY5OWI2OTYxNzdjNzU0N2FhMCIsInVzZXJSb2xlcyI6W3sicm9sZUlkIjp7InBlcm1pc3Npb25zIjpbImxpc3Rpbmcudmlld2VyIl19fV0sImNsaWVudFR5cGUiOiJib29raW5nIiwiaWFtIjoidjMiLCJhcHBsaWNhdGlvbklkIjoiMG9hdHQ0dWczcEp3N0RKNXc1ZDcifQ.zqidfqWvz8YD1RTs-yT3NB2R2TxkU3ht1ZtSnWRZqYyYtapXL-84ZEEC2j-fn9BFnKp5yGAjI0UWhZ0LPIZqxzzcqKhQC6zDOipfvM-f4ZET5RXCXvaVVxV_CHGJAnzRlQ7Le0PY2GzKaTeT4fYk0XzuzoPzOxvbUhppJ8Qk3ByRMGy557Ts5Jx2pwHMXtXRBac76D7M8Kn_Qbt65m8BkiISqrAlL4THEPDLsHprLHjQFh6A7cL0aig-LUhCaW-2s8nnmmPk56570374xngWLeCgsQehLxbcBYgZStDQ4aalVDGV8mlHj6e92XuvXctJD8uDMERKXL296VPGahr0tw"
+    },
+    {
+      "key": "listingId",
+      "value": "69163dbab8f42600132a46a6"
+    },
+    {
+      "key": "quoteId",
+      "value": "69c634df445e18917c2c41a0"
+    },
+    {
+      "key": "ratePlanId",
+      "value": "default-rateplan-id"
+    },
+    {
+      "key": "reservationId",
+      "value": "69c637ac43a2b744cb418db7"
+    }
+  ]
+}
