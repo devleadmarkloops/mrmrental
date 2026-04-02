@@ -535,7 +535,13 @@ $loadMoreQuery = http_build_query($loadMoreParams);
                     $price     = $listing['prices']['basePrice'] ?? null;
                     $currency  = $listing['prices']['currency'] ?? 'USD';
                 ?>
-                <a href="listing.php?id=<?= urlencode($id) ?>" class="listing-card">
+                <?php
+                    $listingParams = ['id' => $id];
+                    if ($checkIn)  $listingParams['checkIn']  = $checkIn;
+                    if ($checkOut) $listingParams['checkOut'] = $checkOut;
+                    if ($guests)   $listingParams['guests']   = $guests;
+                ?>
+                <a href="listing.php?<?= http_build_query($listingParams) ?>" class="listing-card">
                     <?php if ($image): ?>
                         <img class="listing-image" src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($title) ?>" loading="lazy">
                     <?php else: ?>

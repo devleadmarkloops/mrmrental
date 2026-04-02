@@ -280,10 +280,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
         <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>">
         <div class="sidebar-field" id="dateField">
             <span class="field-icon">&#128197;</span>
-            <span id="dateLabel" style="font-size:15px;color:#999;flex:1;cursor:pointer">Start date - End date</span>
+            <span id="dateLabel" style="font-size:15px;color:<?= ($checkIn && $checkOut) ? '#333' : '#999' ?>;flex:1;cursor:pointer"><?= ($checkIn && $checkOut) ? htmlspecialchars(date('M j', strtotime($checkIn)) . ' - ' . date('M j', strtotime($checkOut))) : 'Start date - End date' ?></span>
             <span style="color:#999;font-size:12px">&#9662;</span>
-            <input type="hidden" name="checkIn" id="sCheckIn">
-            <input type="hidden" name="checkOut" id="sCheckOut">
+            <input type="hidden" name="checkIn" id="sCheckIn" value="<?= htmlspecialchars($checkIn) ?>">
+            <input type="hidden" name="checkOut" id="sCheckOut" value="<?= htmlspecialchars($checkOut) ?>">
             <div class="sidebar-cal-popup" id="sCalPopup">
                 <div class="cal-nav">
                     <button type="button" id="sCalPrev">&lsaquo;</button>
@@ -296,7 +296,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
             <span class="field-icon">&#128100;</span>
             <select name="guests" id="guestsInput">
                 <option value="">Guests</option>
-                <?php for($g=1;$g<=16;$g++):?><option value="<?=$g?>"><?=$g?> Guest<?=$g>1?'s':''?></option><?php endfor;?>
+                <?php for($g=1;$g<=16;$g++):?><option value="<?=$g?>"<?= ($guests==$g)?' selected':''?>><?=$g?> Guest<?=$g>1?'s':''?></option><?php endfor;?>
             </select>
         </div>
         <button type="submit" class="sidebar-search-btn" id="searchBtn">Search</button>
@@ -322,7 +322,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     var ciF=document.getElementById('sCheckIn'),coF=document.getElementById('sCheckOut');
     var calM=document.getElementById('sCalMonths'),searchBtn=document.getElementById('searchBtn');
     var today=new Date();today.setHours(0,0,0,0);
-    var bM=today.getMonth(),bY=today.getFullYear(),sD=null,eD=null;
+    var bM=today.getMonth(),bY=today.getFullYear();
+    var sD=ciF.value?(function(){var p=ciF.value.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setHours(0,0,0,0);return d;}()):null;
+    var eD=coF.value?(function(){var p=coF.value.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);d.setHours(0,0,0,0);return d;}()):null;
+    if(sD){bM=sD.getMonth();bY=sD.getFullYear();}
     var mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
     var sm=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -371,6 +374,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
     document.getElementById('sCalNext').addEventListener('click',function(ev){ev.preventDefault();ev.stopPropagation();bM++;if(bM>11){bM=0;bY++}render()});
     document.addEventListener('click',function(ev){if(!ev.target.closest('#dateField')&&!ev.target.closest('.sidebar-cal-popup'))calPopup.classList.remove('open')});
     var gi=document.getElementById('guestsInput');if(gi)gi.addEventListener('change',upBtn);
+    upBtn();
     render();
 })();
 </script>
